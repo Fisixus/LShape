@@ -4,7 +4,10 @@
 typedef Angel::vec4  color4;
 typedef Angel::vec4  point4;
 
+enum { InitMode = 0, SingleRotationMode = 1, AnimationMode = 2};
+int Mode = InitMode;
 const int NumVertices = 12; // 6 vertex
+
 GLuint ww = 500;
 GLuint wh = 500;
 
@@ -30,9 +33,16 @@ color4 vertex_colors[6] = {
 	color4(1.0, 0.0, 1.0, 1.0),  // magenta
 };
 
-point4 referencePoint = point4(-0.9, -0.9, 0.0, 1.0);
-GLuint  theta = 5;  // The location of the "theta" shader uniform variable
-
+point4 referencePoint = point4(-0.9, -1.0, 0.0, 1.0);
+enum { Xaxis = 0, Yaxis = 1, Zaxis = 2, NumAxes = 3 };
+int      Axis = Xaxis;
+GLfloat  ThetaValue[NumAxes] = { 0.0, 0.0, 0.0 };
+GLfloat  TranslateOriginValue[NumAxes] = { 0.0, 0.0, 0.0 };
+GLfloat  TranslateMousePosValue[NumAxes] = { 0.0, 0.0, 0.0 };
+GLuint  theta;  // The location of the "theta" shader uniform variable
+GLuint translateOriginValue;// The location of the "translate" shader uniform variable
+GLuint translateMousePosValue;
+GLuint vao;
 //----------------------------------------------------------------------------
 
 // quad generates two triangles for each face and assigns colors
@@ -67,7 +77,7 @@ void init()
 	//printf("Pressing left, middle and right  mouse buttons will change the rotation axis to X, Y, and Z, respectively.\n");;
 
 	// Create a vertex array object
-	GLuint vao;
+	
 	glGenVertexArrays(1, &vao);
 	glBindVertexArray(vao);
 
@@ -96,6 +106,8 @@ void init()
 		BUFFER_OFFSET(sizeof(points)));
 
 	theta = glGetUniformLocation(program, "theta");
+	translateOriginValue = glGetUniformLocation(program, "translateOriginValue");
+	translateMousePosValue = glGetUniformLocation(program, "translateMousePosValue");
 
 	glEnable(GL_DEPTH_TEST);
 	glClearColor(1.0, 1.0, 1.0, 1.0);
@@ -106,11 +118,14 @@ void init()
 void display(void)
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-	//glUniform3fv(theta, 1, Theta);
+	glBindVertexArray(vao);
+	glUniform3fv(translateMousePosValue, 1, TranslateMousePosValue);
+	glUniform3fv(theta, 1, ThetaValue);
+	glUniform3fv(translateOriginValue, 1, TranslateOriginValue);
 	glDrawArrays(GL_TRIANGLES, 0, NumVertices);
 
 	glutSwapBuffers();
+	//printf("OpenGL version supported %f %f\n", LShape[0][0], LShape[1][1]);
 }
 
 //----------------------------------------------------------------------------
@@ -126,6 +141,33 @@ void keyboard(unsigned char key, int x, int y)
 }
 
 //----------------------------------------------------------------------------
+void singleRotationMode(int mouseX, int mouseY)
+{
+	//translate ref point to (0,0)
+
+	TranslateOriginValue[0] = 0 - referencePoint[0];
+	TranslateOriginValue[1] = 0 - referencePoint[1];
+	TranslateOriginValue[2] = 0;
+
+	//rotate 30 clockwise counter direction
+
+	ThetaValue[0] = 0;
+	ThetaValue[1] = 0;
+	ThetaValue[2] = 30;
+
+
+	//translate ref point to mouse coordination
+
+	mouseY = wh - mouseY;
+	GLfloat x = mouseX / 250.0;
+	GLfloat y = mouseY / 250.0;
+	TranslateMousePosValue[0] = referencePoint[0] + x - 0.1;
+	TranslateMousePosValue[1] = referencePoint[1] + y;
+	TranslateMousePosValue[2] = 0;
+	glutPostRedisplay();
+}
+
+//----------------------------------------------------------------------------
 
 void mouse(int button, int state, int x, int y)
 {
@@ -133,7 +175,10 @@ void mouse(int button, int state, int x, int y)
 		switch (button) {
 		case GLUT_LEFT_BUTTON:     break;
 		case GLUT_MIDDLE_BUTTON:   break;
-		case GLUT_RIGHT_BUTTON:    break;
+		case GLUT_RIGHT_BUTTON: 
+			Mode = SingleRotationMode;
+			singleRotationMode(x, y);
+			break;
 		}
 	}
 }
