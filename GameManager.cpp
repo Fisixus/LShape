@@ -18,13 +18,23 @@ point4 points[NumVertices];
 color4 colors[NumVertices];
 
 point4 LShape[6] = {
+/*
 	point4(-1.0,-1.0 ,0.0, 1.0), //a0
 	point4(-1.0,-0.6 ,0.0, 1.0), //a1
 	point4(-0.9,-0.6 ,0.0, 1.0), //a2
 	point4(-0.9,-0.9 ,0.0, 1.0), //a3
 	point4(-0.8,-0.9 ,0.0, 1.0), //a4
-	point4(-0.8,-1.0 ,0.0, 1.0), //a5
+	point4(-0.8,-1.0 ,0.0, 1.0), //a5*/
+	point4(0.0, 0.0 ,0.0, 1.0), //a0
+	point4(0.0, 0.4 ,0.0, 1.0), //a1
+	point4(0.1, 0.4 ,0.0, 1.0), //a2
+	point4(0.1, 0.1 ,0.0, 1.0), //a3
+	point4(0.2, 0.1 ,0.0, 1.0), //a4
+	point4(0.2, 0.0 ,0.0, 1.0), //a5
 };
+
+//point4 referencePoint = point4(-0.9, -1.0, 0.0, 1.0);
+point4 referencePoint = point4(0.1, 0.0, 0.0, 1.0);
 
 // RGBA colors
 color4 vertex_colors[6] = {
@@ -34,15 +44,12 @@ color4 vertex_colors[6] = {
 	color4(0.0, 1.0, 0.0, 1.0),  // green
 	color4(0.0, 0.0, 1.0, 1.0),  // blue
 	color4(1.0, 0.0, 1.0, 1.0),  // magenta
-};
+}; 
 
-point4 referencePoint = point4(-0.9, -1.0, 0.0, 1.0);
-enum { Xaxis = 0, Yaxis = 1, Zaxis = 2, NumAxes = 3 };
-int      Axis = Xaxis;
-GLfloat  ThetaValue[NumAxes] = { 0.0, 0.0, 0.0 };
-GLfloat  TranslateOriginValue[NumAxes] = { 0.0, 0.0, 0.0 };
-GLfloat  TranslateMousePosValue[NumAxes] = { 0.0, 0.0, 0.0 };
-GLfloat  TranslateRotatingValue[NumAxes] = { 0.0, 0.0, 0.0 };
+GLfloat  ThetaValue[3] = { 0.0, 0.0, 0.0 };
+GLfloat  TranslateOriginValue[3] = { 0.0, 0.0, 0.0 };
+GLfloat  TranslateMousePosValue[3] = { 0.0, 0.0, 0.0 };
+GLfloat  TranslateRotatingValue[3] = { 0.0, 0.0, 0.0 };
 
 GLfloat degree = 30;
 int mouseX = 0;
@@ -192,10 +199,9 @@ void animationMode(int id)
 	//translate to rotating location
 
 	//printf("OpenGL version supported %f \n", sin(rotatingDegree) * radius);
-/*
-	TranslateRotatingValue[0] = cos(rotatingDegree) * radius;
-	TranslateRotatingValue[1] = sin(rotatingDegree) * radius;
-	TranslateRotatingValue[2] = 0;*/
+	TranslateRotatingValue[0] =  sin(rotatingDegree * DegreesToRadians) * radius;
+	TranslateRotatingValue[1] =  cos(rotatingDegree * DegreesToRadians) * radius;
+	TranslateRotatingValue[2] = 0;
 
 	glutPostRedisplay();
 	glutTimerFunc(750, animationMode, 0);
@@ -220,10 +226,16 @@ void singleRotationMode()
 
 	//translate ref point to mouse coordination
 
+/*
 	GLfloat x = mouseX / 250.0;
 	GLfloat y = mouseY / 250.0;
 	TranslateMousePosValue[0] = referencePoint[0] + x - 0.1;
 	TranslateMousePosValue[1] = referencePoint[1] + y;
+	TranslateMousePosValue[2] = 0;*/
+	GLfloat x = mouseX / 250.0;
+	GLfloat y = mouseY / 250.0;
+	TranslateMousePosValue[0] = referencePoint[0] - 1 + x - 0.1;
+	TranslateMousePosValue[1] = referencePoint[1] - 1 + y;
 	TranslateMousePosValue[2] = 0;
 	glutPostRedisplay();
 }
