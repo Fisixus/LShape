@@ -8,6 +8,7 @@ out vec4 color;
 uniform vec3 theta;
 uniform vec3 translateOriginValue;
 uniform vec3 translateMousePosValue;
+uniform vec3 translateRotatingValue;
 
 
 
@@ -41,12 +42,17 @@ void main()
 		0.0, 0.0, 1.0, 0.0,
 		translateOriginValue.x, translateOriginValue.y, translateOriginValue.z, 1.0);
 
-			mat4 tXYZ2 = mat4(1.0, 0.0, 0.0, 0.0,
+	mat4 tXYZ2 = mat4(1.0, 0.0, 0.0, 0.0,
 		0.0, 1.0, 0.0, 0.0,
 		0.0, 0.0, 1.0, 0.0,
 		translateMousePosValue.x, translateMousePosValue.y, translateMousePosValue.z, 1.0);
 
+	mat4 tXYZ3 = mat4(1.0, 0.0, 0.0, 0.0,
+		0.0, 1.0, 0.0, 0.0,
+		0.0, 0.0, 1.0, 0.0,
+		translateRotatingValue.x, translateRotatingValue.y, translateRotatingValue.z, 1.0);
+
 	
     color = vColor;
-    gl_Position = tXYZ2 * rZ * rY * rX * tXYZ * vPosition;
+    gl_Position = tXYZ3 * tXYZ2 * rZ * rY * rX * tXYZ * vPosition;
 } 
