@@ -39,15 +39,24 @@ int      Axis = Xaxis;
 GLfloat  ThetaValue[NumAxes] = { 0.0, 0.0, 0.0 };
 GLfloat  TranslateOriginValue[NumAxes] = { 0.0, 0.0, 0.0 };
 GLfloat  TranslateMousePosValue[NumAxes] = { 0.0, 0.0, 0.0 };
+
+GLfloat degree = 30;
+int mouseX = 0;
+int mouseY = 0;
+
 GLuint  theta;  // The location of the "theta" shader uniform variable
 GLuint translateOriginValue;// The location of the "translate" shader uniform variable
 GLuint translateMousePosValue;
 GLuint vao;
-//----------------------------------------------------------------------------
 
+int Index = 0;
+//----------------------------------------------------------------------------
+void singleRotationMode(void);
+void quad(int a, int b, int c, int d);
+void fillColorsandPoints();
 // quad generates two triangles for each face and assigns colors
 //    to the vertices
-int Index = 0;
+
 void quad(int a, int b, int c, int d)
 {
 	colors[Index] = vertex_colors[a]; points[Index] = LShape[a]; Index++;
@@ -137,11 +146,18 @@ void keyboard(unsigned char key, int x, int y)
 	case 'q': case 'Q':
 		exit(EXIT_SUCCESS);
 		break;
+	case 'r': case 'R':
+		if (Mode == SingleRotationMode)
+		{
+			degree = degree + 5;
+			singleRotationMode();
+		}
+		break;
 	}
 }
 
 //----------------------------------------------------------------------------
-void singleRotationMode(int mouseX, int mouseY)
+void singleRotationMode()
 {
 	//translate ref point to (0,0)
 
@@ -150,15 +166,12 @@ void singleRotationMode(int mouseX, int mouseY)
 	TranslateOriginValue[2] = 0;
 
 	//rotate 30 clockwise counter direction
-
 	ThetaValue[0] = 0;
 	ThetaValue[1] = 0;
-	ThetaValue[2] = 30;
-
+	ThetaValue[2] = degree;
 
 	//translate ref point to mouse coordination
 
-	mouseY = wh - mouseY;
 	GLfloat x = mouseX / 250.0;
 	GLfloat y = mouseY / 250.0;
 	TranslateMousePosValue[0] = referencePoint[0] + x - 0.1;
@@ -177,7 +190,9 @@ void mouse(int button, int state, int x, int y)
 		case GLUT_MIDDLE_BUTTON:   break;
 		case GLUT_RIGHT_BUTTON: 
 			Mode = SingleRotationMode;
-			singleRotationMode(x, y);
+			mouseX = x;
+			mouseY = wh - y;
+			singleRotationMode();
 			break;
 		}
 	}
