@@ -7,9 +7,10 @@ typedef Angel::vec4  point4;
 enum { InitMode = 0, SingleRotationMode = 1, AnimationMode = 2};
 int Mode = InitMode;
 const int NumVertices = 12; 
-const int n = 8;
+const int n = 16;
 GLfloat rotatingDegree = 0.0;
 GLfloat radius = 0.4; 
+bool firstRoll = false;
 
 GLuint ww = 500;
 GLuint wh = 500;
@@ -170,6 +171,7 @@ void keyboard(unsigned char key, int x, int y)
 		break;
 	case 'a': case 'A':
 		Mode = AnimationMode;
+		firstRoll = true;
 		rotatingDegree = 0;
 		TranslateMousePosValue[0] = 0;
 		TranslateMousePosValue[1] = 0;
@@ -184,6 +186,7 @@ void animationMode(int id)
 {
 	if (Mode != AnimationMode) return;
 	rotatingDegree += 360.0 / n;
+	if (firstRoll) rotatingDegree = 0.0f;
 	if (rotatingDegree >= 360) rotatingDegree = 0;
 	//translate ref point to (0,0)
 	TranslateOriginValue[0] = 0 - referencePoint[0];
@@ -203,6 +206,7 @@ void animationMode(int id)
 	TranslateRotatingValue[1] =  cos(rotatingDegree * DegreesToRadians) * radius;
 	TranslateRotatingValue[2] = 0;
 
+	firstRoll = false;
 	glutPostRedisplay();
 	glutTimerFunc(750, animationMode, 0);
 
