@@ -7,7 +7,7 @@ typedef Angel::vec4  point4;
 enum { InitMode = 0, SingleRotationMode = 1, AnimationMode = 2};
 int Mode = InitMode;
 const int NumVertices = 12; 
-const int n = 16;
+const int n = 8;
 GLfloat rotatingDegree = 0.0;
 GLfloat radius = 0.4; 
 bool firstRoll = false;
@@ -17,6 +17,17 @@ GLuint wh = 500;
 
 point4 points[NumVertices];
 color4 colors[NumVertices];
+
+/*
+
+a1*a2
+*   *
+*	*
+*	a3 * * * a4
+*			 *
+a0 * * R * * a5
+
+*/
 
 point4 LShape[6] = {
 /*
@@ -208,7 +219,7 @@ void animationMode(int id)
 
 	firstRoll = false;
 	glutPostRedisplay();
-	glutTimerFunc(750, animationMode, 0);
+	glutTimerFunc(250, animationMode, 0);
 
 	
 }
@@ -312,7 +323,7 @@ int main(int argc, char **argv)
 	glutDisplayFunc(display);
 	glutKeyboardFunc(keyboard);
 	glutMouseFunc(mouse);
-	glutTimerFunc(750, animationMode, 0);
+	glutTimerFunc(250, animationMode, 0);
 	glutMainLoop();
 	return 0;
 }
